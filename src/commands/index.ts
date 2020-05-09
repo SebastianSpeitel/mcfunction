@@ -1,8 +1,10 @@
 import { Argument, ArgumentObject, rangeToString } from "../arguments";
 import { Transpiler } from "../transpiler";
+import { parseErrorTrace } from "../utility";
 
 const NAME: unique symbol = Symbol("name");
 const ARGUMENTS: unique symbol = Symbol("arguments");
+const TRACE: unique symbol = Symbol("trace");
 
 export abstract class Command<
   T extends keyof CommandContext = keyof CommandContext,
@@ -10,9 +12,12 @@ export abstract class Command<
 > extends ArgumentObject {
   static readonly NAME: typeof NAME = NAME;
   static readonly ARGUMENTS: typeof ARGUMENTS = ARGUMENTS;
+  static readonly TRACE: typeof TRACE = TRACE;
 
   readonly [NAME]: T;
   declare readonly [ARGUMENTS]: U;
+  readonly [TRACE]: string[] | undefined;
+
   /**
    * @param {CommandName} name the command to be executed
    * @param {Argument[]} args the parameters to be passed to the command
@@ -20,6 +25,7 @@ export abstract class Command<
   constructor(name: T, args?: U) {
     super();
     this[NAME] = name;
+    this[TRACE] = parseErrorTrace(Error());
     if (args) {
       this[ARGUMENTS] = args;
     }

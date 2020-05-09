@@ -49,6 +49,13 @@ function assumeMinecraft(s: string): string {
   return s.includes(':') ? s : `minecraft:${s}`
 }
 
+function parseErrorTrace(err: Error) {
+  return err.stack
+    ?.split("\n")
+    .filter((_, i) => i > 0)
+    .map(l => l.trim().substr(3).split("(")[0].trim());
+}
+
 export {
   jsonBeautify,
   mkdirIfNotExist,
@@ -56,4 +63,5 @@ export {
   hasIllegalCharsSlash,
   itemArrayFromString,
   assumeMinecraft,
-}
+  parseErrorTrace
+};
